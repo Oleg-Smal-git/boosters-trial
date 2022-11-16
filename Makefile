@@ -1,12 +1,15 @@
+OVERRIDE_HOST = ""
+OVERRIDE_PORT = 0
+
 build:
-	@go build -o bin/boosters-trial main/run.go
+	@go build -o bin/boosters-trial ./main
 
 run:
-	@build
-	@./bin/boosters-trial
+	@make build
+	@./bin/boosters-trial --host=$(OVERRIDE_HOST) --port=$(OVERRIDE_PORT)
 
 unit_test:
 	@go test ./...
 
 integration_test:
-	@run
+	@make run
