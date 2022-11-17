@@ -2,9 +2,8 @@ package main
 
 import (
 	"flag"
+	"github.com/Oleg-Smal-git/boosters-trial/app/config"
 	"strconv"
-
-	"github.com/Oleg-Smal-git/boosters-trial/config"
 
 	log "github.com/sirupsen/logrus"
 )

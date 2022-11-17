@@ -1,10 +1,9 @@
 package config
 
 import (
+	"github.com/Oleg-Smal-git/boosters-trial/app/helpers"
 	"os"
 	"strings"
-
-	"github.com/Oleg-Smal-git/boosters-trial/helpers"
 
 	"github.com/robfig/config"
 )

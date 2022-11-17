@@ -3,6 +3,7 @@ OVERRIDE_PORT = 0
 
 build:
 	@go build -o bin/boosters-trial ./main
+	@go build
 
 run:
 	@make build
@@ -12,4 +13,4 @@ unit_test:
 	@go test ./...
 
 integration_test:
-	@make run
+	@make run OVERRIDE_HOST="127.0.0.1" OVERRIDE_PORT=99999
