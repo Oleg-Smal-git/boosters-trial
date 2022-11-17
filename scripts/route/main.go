@@ -48,13 +48,13 @@ func main() {
 		if _, ok := allowedMethods[row[0]]; !ok {
 			panic(row[0] + "method is not valid")
 		}
-		if _, ok := data.Handlers[row[0]]; !ok {
-			data.Handlers[row[0]] = make(map[string]string)
+		if _, ok := data.Handlers[row[1]]; !ok {
+			data.Handlers[row[1]] = make(map[string]string)
 		}
 		upC := strings.Split(row[2], ".")[0]
 		lowC := strings.ToLower(upC[:1]) + upC[1:]
 		data.Controllers[upC] = lowC
-		data.Handlers[row[0]][row[1]] = lowC + "." + strings.Split(row[2], ".")[1]
+		data.Handlers[row[1]][row[0]] = lowC + "." + strings.Split(row[2], ".")[1]
 	}
 	rawTemplate, err := os.ReadFile(config.BasePath() + "/scripts/route/_template.go.tmp")
 	if err != nil {

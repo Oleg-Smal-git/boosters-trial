@@ -45,6 +45,7 @@ docker_down:
 	@docker-compose down
 
 docker_up:
+	@make build_all
 	@make docker_down
 	@docker-compose up -d postgres; sleep 1
 	@docker-compose up migrations

@@ -2,16 +2,19 @@ package main
 
 import (
 	"flag"
-	"github.com/Oleg-Smal-git/boosters-trial/app/config"
-	log "github.com/sirupsen/logrus"
 	"strconv"
-	"time"
+
+	"github.com/Oleg-Smal-git/boosters-trial/app/config"
+	"github.com/Oleg-Smal-git/boosters-trial/app/controllers"
+	"github.com/Oleg-Smal-git/boosters-trial/app/services/api"
+
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
 	// Load configs.
 	cfg := config.MustConfig()
-	log.Infof("starting the app with %v env", cfg["envname"])
+	logrus.Infof("starting the app with %v env", cfg["envname"])
 
 	// Parse override flags.
 	var host string
@@ -25,7 +28,13 @@ func main() {
 	if port == 0 {
 		port, _ = strconv.Atoi(cfg["self.port"])
 	}
-	log.Infof("starting the app at %v:%v", host, port)
+	logrus.Infof("starting the app at %v:%v", host, port)
 
-	time.Sleep(5 * time.Second)
+	// Instantiate the api server.
+	server := api.NewServer(host, port, controllers.Controllers)
+	err := server.Run()
+	if err != nil {
+		logrus.WithError(err).Fatal("server existed with error")
+	}
+	logrus.Info("server shut down gracefully")
 }
