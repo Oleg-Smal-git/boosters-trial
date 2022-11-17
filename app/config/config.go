@@ -1,9 +1,10 @@
 package config
 
 import (
-	"github.com/Oleg-Smal-git/boosters-trial/app/helpers"
 	"os"
 	"strings"
+
+	"github.com/Oleg-Smal-git/boosters-trial/app/helpers"
 
 	"github.com/robfig/config"
 )
@@ -29,7 +30,7 @@ func Config() (map[string]string, error) {
 
 // evaluateConfig loads configs based on ENV flag.
 func evaluateConfig(env string) (map[string]string, error) {
-	cfg, err := config.ReadDefault(helpers.BasePath() + "/config/app.conf")
+	cfg, err := config.ReadDefault(helpers.BasePath() + "/app/config/app.conf")
 	if err != nil {
 		return nil, err
 	}
