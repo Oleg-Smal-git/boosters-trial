@@ -10,10 +10,7 @@ import (
 
 func main() {
 	// Load configs.
-	cfg, err := config.Config()
-	if err != nil {
-		panic(err)
-	}
+	cfg := config.MustConfig()
 	log.Infof("starting the app with %v env", cfg["envname"])
 
 	// Parse override flags.
@@ -23,10 +20,10 @@ func main() {
 	flag.IntVar(&port, "port", 0, "override port, defaulted to config if not provided")
 	flag.Parse()
 	if host == "" {
-		host = cfg["host"]
+		host = cfg["self.host"]
 	}
 	if port == 0 {
-		p, err := strconv.Atoi(cfg["port"])
+		p, err := strconv.Atoi(cfg["self.port"])
 		if err != nil {
 			panic(err)
 		}

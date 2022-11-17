@@ -34,7 +34,7 @@ func TestConfig(t *testing.T) {
 				return cfg["envname"], nil
 			},
 			assertion: func(value string) {
-				assert.Equal(t, "default-env", value)
+				assert.Equal(t, "default", value)
 			},
 			cleanup: func(memory string) error {
 				return os.Setenv("ENV", memory)
@@ -60,7 +60,7 @@ func TestConfig(t *testing.T) {
 				return cfg["envname"], nil
 			},
 			assertion: func(value string) {
-				assert.Equal(t, "test-env", value)
+				assert.Equal(t, "test", value)
 			},
 			cleanup: func(memory string) error {
 				return os.Setenv("ENV", memory)
@@ -86,7 +86,7 @@ func TestConfig(t *testing.T) {
 				return cfg["envname"], nil
 			},
 			assertion: func(value string) {
-				assert.Equal(t, "production-env", value)
+				assert.Equal(t, "production", value)
 			},
 			cleanup: func(memory string) error {
 				return os.Setenv("ENV", memory)

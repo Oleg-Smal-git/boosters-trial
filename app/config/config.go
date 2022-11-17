@@ -28,6 +28,15 @@ func Config() (map[string]string, error) {
 	return configCache, nil
 }
 
+// MustConfig wraps Config and panics if an error is returned.
+func MustConfig() map[string]string {
+	cfg, err := Config()
+	if err != nil {
+		panic(err)
+	}
+	return cfg
+}
+
 // evaluateConfig loads configs based on ENV flag.
 func evaluateConfig(env string) (map[string]string, error) {
 	cfg, err := config.ReadDefault(helpers.BasePath() + "/app/config/app.conf")

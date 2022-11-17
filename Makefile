@@ -17,4 +17,3 @@ integration_test:
 	@exec -a testAppInstance ./bin/run-api --host="127.0.0.1" --port=99999 &
 	@./bin/integration-tests --targetHost="127.0.0.1" --targetPort=99999
 	@pkill -f testAppInstance
-	@wait
