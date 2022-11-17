@@ -41,6 +41,7 @@ func TestBasePath(t *testing.T) {
 						return err
 					}
 				}
+				basePathCache = ""
 				return nil
 			},
 		},
@@ -75,6 +76,7 @@ func TestBasePath(t *testing.T) {
 						return err
 					}
 				}
+				basePathCache = ""
 				return nil
 			},
 		},
@@ -109,6 +111,7 @@ func TestBasePath(t *testing.T) {
 						return err
 					}
 				}
+				basePathCache = ""
 				return nil
 			},
 		},
@@ -154,6 +157,8 @@ func TestConfig(t *testing.T) {
 				assert.Equal(t, "default", value)
 			},
 			cleanup: func(memory string) error {
+				configCache = nil
+				envCache = ""
 				return os.Setenv("ENV", memory)
 			},
 		},
@@ -180,6 +185,8 @@ func TestConfig(t *testing.T) {
 				assert.Equal(t, "test", value)
 			},
 			cleanup: func(memory string) error {
+				configCache = nil
+				envCache = ""
 				return os.Setenv("ENV", memory)
 			},
 		},
@@ -206,6 +213,8 @@ func TestConfig(t *testing.T) {
 				assert.Equal(t, "production", value)
 			},
 			cleanup: func(memory string) error {
+				configCache = nil
+				envCache = ""
 				return os.Setenv("ENV", memory)
 			},
 		},
