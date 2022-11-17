@@ -11,5 +11,5 @@ GRANT SELECT ON ALL TABLES IN SCHEMA "public" TO "boosters-trial-readonly-user";
 
 -- Create version table that would manage migrations.
 CREATE TABLE versions (
-    id BIGINT PRIMARY KEY
+    id VARCHAR(255) PRIMARY KEY
 );

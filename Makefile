@@ -1,5 +1,7 @@
 OVERRIDE_HOST = ""
 OVERRIDE_PORT = 0
+OVERRIDE_DSN = ""
+MIGRATION_NAME = ""
 
 build_scripts:
 	@go build -o ./bin/scripts/ ./scripts/...
@@ -26,14 +28,18 @@ unit_test:
 	@go test ./...
 
 integration_test:
-	@make build
-	@exec -a testAppInstance ./bin/run-api --host="127.0.0.1" --port=9999 &
+	@make build_integration_tests
+	@make run OVERRIDE_HOST="127.0.0.1" OVERRIDE_PORT=9999 &
 	@./bin/integration-tests --targetHost="127.0.0.1" --targetPort=9999
-	@pkill -f testAppInstance
+	@pkill run-api || true
+
+new_migration:
+	@make build_scripts
+	@./bin/scripts/new_migration --name=$(MIGRATION_NAME)
 
 migrate:
 	@make build_scripts
-
+	@./bin/scripts/migrate --dsn=$(OVERRIDE_DSN)
 
 docker_down:
 	@docker-compose down

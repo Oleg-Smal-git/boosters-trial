@@ -1,5 +1,66 @@
 package main
 
-func main() {
+import (
+	"flag"
+	"io/ioutil"
+	"os"
+	"strings"
 
+	"github.com/Oleg-Smal-git/boosters-trial/app/config"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+)
+
+// version is a wrapper for version migration.
+type version struct {
+	ID string `gorm:"column:id; primary_key:yes"`
+}
+
+func main() {
+	cfg := config.MustConfig()
+	defaultDsn := cfg["database.writer"]
+
+	// Parse override flags.
+	var dsn string
+	flag.StringVar(&dsn, "dsn", "", "override data source name, defaulted to config if not provided")
+	flag.Parse()
+	if dsn == "" {
+		dsn = defaultDsn
+	}
+
+	// Read applied migrations.
+	db, _ := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	var appliedMigrations []version
+	db.Table("versions").Find(&appliedMigrations)
+	appliedMigrationsHash := make(map[string]struct{}, len(appliedMigrations))
+	for _, m := range appliedMigrations {
+		appliedMigrationsHash[m.ID] = struct{}{}
+	}
+
+	// Find un-applied migrations and run them.
+	sourceFolder := config.BasePath() + "/db/migrations/"
+	files, _ := ioutil.ReadDir(sourceFolder)
+	for _, f := range files {
+		if strings.HasPrefix(f.Name(), "_") {
+			continue
+		}
+		if strings.HasSuffix(f.Name(), ".down.sql") {
+			continue
+		}
+		id := strings.Split(f.Name(), "_")[0]
+		if _, ok := appliedMigrationsHash[id]; ok {
+			continue
+		}
+		query, _ := os.ReadFile(sourceFolder + f.Name())
+		err := db.Exec(string(query)).Error
+		if err != nil {
+			query, _ = os.ReadFile(sourceFolder + strings.Replace(f.Name(), ".up.sql", ".down.sql", 1))
+			err = db.Exec(string(query)).Error
+			if err != nil {
+				panic(err)
+			}
+		}
+		db.Table("versions").Create(&version{ID: id})
+	}
 }

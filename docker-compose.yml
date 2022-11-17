@@ -1,5 +1,6 @@
 version: '3.8'
 services:
+
     postgres:
         image: postgres:14.1-alpine
         restart: always
@@ -11,25 +12,32 @@ services:
         volumes:
             - db:/var/lib/postgresql/data
             - ./db/migrations/_init.sql:/docker-entrypoint-initdb.d/create_tables.sql
+
     migrations:
         container_name: boosters-trial-migrations
         build:
             context: .
             dockerfile: ./Dockerfile
+        links:
+            - "postgres:database"
         depends_on:
             - postgres
         command:
-            - '/boosters-trial/bin/scripts/migrate'
+            - '/boosters-trial/bin/scripts/migrate OVERRIDE_DSN="postgresql://boosters-trial-user:secret123@database:5432/boosters-trial"'
+
     api:
         container_name: boosters-trial-api
         build:
             context: .
             dockerfile: ./Dockerfile
+        links:
+            - "postgres:database"
         depends_on:
             - postgres
             - migrations
         ports:
             - 8080:8080
+
 volumes:
     db:
         driver: local

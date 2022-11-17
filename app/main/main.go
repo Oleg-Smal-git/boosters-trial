@@ -22,11 +22,7 @@ func main() {
 		host = cfg["self.host"]
 	}
 	if port == 0 {
-		p, err := strconv.Atoi(cfg["self.port"])
-		if err != nil {
-			panic(err)
-		}
-		port = p
+		port, _ = strconv.Atoi(cfg["self.port"])
 	}
 	log.Infof("starting the app at %v:%v", host, port)
 }
