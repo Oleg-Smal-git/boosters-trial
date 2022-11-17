@@ -3,9 +3,8 @@ package main
 import (
 	"flag"
 	"github.com/Oleg-Smal-git/boosters-trial/app/config"
-	"strconv"
-
 	log "github.com/sirupsen/logrus"
+	"strconv"
 )
 
 func main() {

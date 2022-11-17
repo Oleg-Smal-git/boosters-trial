@@ -56,7 +56,7 @@ func main() {
 		data.Controllers[upC] = lowC
 		data.Handlers[row[0]][row[1]] = lowC + "." + strings.Split(row[2], ".")[1]
 	}
-	rawTemplate, err := os.ReadFile(config.BasePath() + "/scripts/route/_template.go")
+	rawTemplate, err := os.ReadFile(config.BasePath() + "/scripts/route/_template.go.tmp")
 	if err != nil {
 		panic(err)
 	}
