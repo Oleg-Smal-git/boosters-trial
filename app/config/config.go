@@ -2,9 +2,8 @@ package config
 
 import (
 	"os"
+	"path/filepath"
 	"strings"
-
-	"github.com/Oleg-Smal-git/boosters-trial/app/helpers"
 
 	"github.com/robfig/config"
 )
@@ -14,7 +13,29 @@ var (
 	envCache string
 	// configCache stores the value of LoadConfig after its first call.
 	configCache map[string]string
+	// basePathCache stores the value of BasePath after its first call.
+	basePathCache string
 )
+
+// BasePath fetches project path, caching the result.
+func BasePath() string {
+	if basePathCache == "" {
+		basePathCache = evaluateBasePath()
+	}
+	return basePathCache
+}
+
+// evaluateBasePath evaluates the base path for project.
+func evaluateBasePath() string {
+	if projectPath := os.Getenv("PROJECT_PATH"); projectPath != "" {
+		return projectPath
+	}
+	if gopath := os.Getenv("GOPATH"); gopath != "" {
+		gopath = filepath.Join(strings.Split(gopath, string(os.PathListSeparator))[0], "src")
+		return gopath + "/github.com/Oleg-Smal-git/boosters-trial"
+	}
+	return "."
+}
 
 // Config fetches project configs based on current ENV, caching the result.
 func Config() (map[string]string, error) {
@@ -39,7 +60,7 @@ func MustConfig() map[string]string {
 
 // evaluateConfig loads configs based on ENV flag.
 func evaluateConfig(env string) (map[string]string, error) {
-	cfg, err := config.ReadDefault(helpers.BasePath() + "/app/config/app.conf")
+	cfg, err := config.ReadDefault(BasePath() + "/app/config/app.conf")
 	if err != nil {
 		return nil, err
 	}
