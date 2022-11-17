@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -43,6 +44,7 @@ func main() {
 	files, _ := ioutil.ReadDir(sourceFolder)
 	for _, f := range files {
 		if strings.HasPrefix(f.Name(), "_") {
+			logrus.Infof("skipped migration %v", f.Name())
 			continue
 		}
 		if strings.HasSuffix(f.Name(), ".down.sql") {
@@ -50,6 +52,7 @@ func main() {
 		}
 		id := strings.Split(f.Name(), "_")[0]
 		if _, ok := appliedMigrationsHash[id]; ok {
+			logrus.Infof("skipped migration %v", f.Name())
 			continue
 		}
 		query, _ := os.ReadFile(sourceFolder + f.Name())
@@ -60,7 +63,10 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
+			logrus.Errorf("reverted migration %v", f.Name())
+			continue
 		}
+		logrus.Infof("applied migration %v", f.Name())
 		db.Table("versions").Create(&version{ID: id})
 	}
 }

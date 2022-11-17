@@ -23,7 +23,7 @@ services:
         depends_on:
             - postgres
         command:
-            - '/boosters-trial/bin/scripts/migrate OVERRIDE_DSN="postgresql://boosters-trial-user:secret123@database:5432/boosters-trial"'
+            - '/boosters-trial/bin/scripts/migrate'
 
     api:
         container_name: boosters-trial-api

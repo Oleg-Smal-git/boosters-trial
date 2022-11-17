@@ -5,6 +5,7 @@ import (
 	"github.com/Oleg-Smal-git/boosters-trial/app/config"
 	log "github.com/sirupsen/logrus"
 	"strconv"
+	"time"
 )
 
 func main() {
@@ -25,4 +26,6 @@ func main() {
 		port, _ = strconv.Atoi(cfg["self.port"])
 	}
 	log.Infof("starting the app at %v:%v", host, port)
+
+	time.Sleep(5 * time.Second)
 }
