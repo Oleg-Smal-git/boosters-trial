@@ -7,7 +7,7 @@ build_scripts:
 	@go build -o ./bin/scripts/ ./scripts/...
 
 build_integration_tests:
-	@go build -o ./bin/integration_tests ./integration_tests
+	@go build -o ./bin/test ./test
 
 route:
 	@make build_scripts
@@ -17,21 +17,21 @@ build_api:
 	@make route
 	@go build -o ./bin/run-api ./app/main
 
-build_all: build_api build_scripts build_integration_tests
+build_all: build_api build_scripts
 
 run:
 	@make route
 	@make build_api
 	@./bin/run-api --host=$(OVERRIDE_HOST) --port=$(OVERRIDE_PORT)
 
-unit_tests:
-	go test $$(go list ./... | grep -v integration_tests)
+unit_test:
+	@go test $$(go list ./... | grep -v /test)
 
-integration_tests:
-	@make build_integration_tests
-	@make run OVERRIDE_HOST="127.0.0.1" OVERRIDE_PORT=9999 &
-	@./bin/integration_tests --targetHost="127.0.0.1" --targetPort=9999
-	@pkill run-api || true
+integration_test:
+	@make run ENV="test" OVERRIDE_HOST="127.0.0.1" OVERRIDE_PORT=9999 &
+	@sleep 2.5 # allow api to load
+	@go test ./test --targetHost="127.0.0.1" --targetPort=9999
+	@pkill run-api
 
 new_migration:
 	@make build_scripts
@@ -45,8 +45,7 @@ docker_down:
 	@docker-compose down
 
 docker_up:
-	@export ENV="docker"
-	@make build_all
+	@make build_all ENV="docker"
 	@make docker_down
 	@docker-compose build
 	@docker-compose up -d postgres; sleep 1

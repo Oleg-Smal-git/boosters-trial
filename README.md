@@ -10,9 +10,6 @@ new instance of the API on host and port provided in the config files (more on t
 provided in `OVERRIDE_HOST` and `OVERRIDE_PORT` flags. Data source name for the database is always fetched from configs
 and can't be overridden by cmd flags.
 
-## Swagger
-Here [...]
-
 ## Database
 The database uses PostgreSQL v14.1 driver. Schema structure is managed using migrations, which you can create with 
 `make new_migration --name="migration name here"` (instantiating `.up.sql` and `down.slq` files in `./db/migrations/`), and apply using `make migrate`. The latter will compare all migration 
@@ -25,10 +22,10 @@ replicas without touching the code.
 
 ## Testing
 The project implements both unit and integration tests.
-* To run unit tests, execute `make unit_tests`. This will traverse all the directories and subdirectories of the project,
-    and run all the test files found in it (except for thos located under `./integration-tests/` folder).
-* To run integration tests, execute `make integration_tests`. This will re-build the app and start a new instance of the
-    api on port `9999` running in the background, and then run the `main` function in `integration_tests` package. 
+* To run unit tests, execute `make unit_test`. This will traverse all the directories and subdirectories of the project,
+    and run all the test files found in it (except for thos located under `./test/` folder).
+* To run integration tests, execute `make integration_test`. This will re-build the app and start a new instance of the
+    api on port `9999` running in the background, and then run the `main` function in `test` package. 
     The underlying API instance is killed when tests are done running.
 
 ## Config

@@ -31,7 +31,7 @@ func (s *ControllerSuite) ServeOK(object interface{}) {
 func (s *ControllerSuite) ServeMessageOK(message string) {
 	response := make(map[string]string)
 	response["message"] = message
-	s.ServeOK(message)
+	s.ServeOK(response)
 }
 
 // ServeEmptyOK serves an empty 200 response.
@@ -94,7 +94,7 @@ func (s *ControllerSuite) ParseURLParams() map[string]string {
 	return mux.Vars(s.request)
 }
 
-// ParseJSONBody parses s.request body.
+// ParseJSONBody parses request body.
 // This function really shouldn't be here...
 func (s *ControllerSuite) ParseJSONBody(target any) error {
 	return json.NewDecoder(s.request.Body).Decode(&target)

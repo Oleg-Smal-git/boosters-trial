@@ -158,8 +158,8 @@ func TestPostsService_UpdatePost(t *testing.T) {
 
 	cases := []struct {
 		setup     func() (entities.PostID, error)
-		base      func(id entities.PostID) error
-		assertion func(err error)
+		base      func(id entities.PostID) (entities.Post, error)
+		assertion func(post entities.Post, err error)
 		cleanup   func(entities.PostID) error
 	}{
 		// Existing record.
@@ -172,11 +172,19 @@ func TestPostsService_UpdatePost(t *testing.T) {
 				err := postsServiceTestInstance.CreatePost(ctx, &post)
 				return post.ID, err
 			},
-			base: func(id entities.PostID) error {
-				return postsServiceTestInstance.DeletePost(ctx, id)
+			base: func(id entities.PostID) (entities.Post, error) {
+				post := entities.Post{
+					ID:      id,
+					Title:   "test-title-new",
+					Content: "test-content-new",
+				}
+				err := postsServiceTestInstance.UpdatePost(ctx, &post)
+				return post, err
 			},
-			assertion: func(err error) {
-				assert.Nil(t, err)
+			assertion: func(post entities.Post, err error) {
+				if assert.NoError(t, err) {
+					assert.NotZero(t, post)
+				}
 			},
 			cleanup: func(id entities.PostID) error { return nil },
 		},
@@ -191,10 +199,16 @@ func TestPostsService_UpdatePost(t *testing.T) {
 				_ = postsServiceTestInstance.DeletePost(ctx, post.ID)
 				return post.ID, err
 			},
-			base: func(id entities.PostID) error {
-				return postsServiceTestInstance.DeletePost(ctx, id)
+			base: func(id entities.PostID) (entities.Post, error) {
+				post := entities.Post{
+					ID:      id,
+					Title:   strings.Repeat("x", 255),
+					Content: "test-content-new",
+				}
+				err := postsServiceTestInstance.UpdatePost(ctx, &post)
+				return post, err
 			},
-			assertion: func(err error) {
+			assertion: func(post entities.Post, err error) {
 				if assert.Error(t, err) {
 					assert.ErrorIs(t, err, entities.ErrPostNotFound)
 				}
@@ -205,8 +219,7 @@ func TestPostsService_UpdatePost(t *testing.T) {
 	for _, c := range cases {
 		postID, err := c.setup()
 		assert.Nil(t, err)
-		err = c.base(postID)
-		c.assertion(err)
+		c.assertion(c.base(postID))
 		err = c.cleanup(postID)
 		assert.Nil(t, err)
 	}
