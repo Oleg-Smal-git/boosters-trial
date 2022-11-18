@@ -38,7 +38,11 @@ func generalizeHandler(handlers map[string]Serve) Serve {
 		if handler, ok := handlers[request.Method]; ok {
 			handler(writer, request)
 		} else {
-			ServeNotFound(writer, request)
+			suite := &ControllerSuite{
+				writer:  writer,
+				request: request,
+			}
+			suite.ServeNotFound()
 		}
 	}
 }

@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"context"
-	"net/http"
 	"strconv"
 
 	"github.com/Oleg-Smal-git/boosters-trial/app/services/api"
@@ -10,8 +9,6 @@ import (
 	eposts "github.com/Oleg-Smal-git/boosters-trial/app/services/posts/entities"
 	iposts "github.com/Oleg-Smal-git/boosters-trial/app/services/posts/interfaces"
 	posts "github.com/Oleg-Smal-git/boosters-trial/app/services/posts/logic"
-
-	"github.com/gorilla/mux"
 )
 
 var (
@@ -19,10 +16,12 @@ var (
 )
 
 // PostsController is a wrapper for controllers that interact with posts.
-type PostsController struct{}
+type PostsController struct {
+	api.ControllerSuite
+}
 
 // MustInitialize performs all the setup needed for the controller.
-func (PostsController) MustInitialize() {
+func (c *PostsController) MustInitialize() {
 	ctx := context.Background()
 	reader, err := database.GetReader(ctx)
 	if err != nil {
@@ -40,87 +39,87 @@ func (PostsController) MustInitialize() {
 }
 
 // IndexPosts fetches all posts.
-func (PostsController) IndexPosts(writer http.ResponseWriter, request *http.Request) {
+func (c *PostsController) IndexPosts() {
 	ctx := context.Background()
 	ps, err := postsService.IndexPosts(ctx)
 	if err != nil {
-		api.ServeBadRequest(writer, request, err.Error())
+		c.ServeBadRequest(err.Error())
 		return
 	}
-	api.ServeOK(writer, request, ps)
+	c.ServeOK(ps)
 }
 
 // FindPost fetches a single post.
-func (PostsController) FindPost(writer http.ResponseWriter, request *http.Request) {
+func (c *PostsController) FindPost() {
 	ctx := context.Background()
-	rawID := mux.Vars(request)["id"]
+	rawID := c.ParseURLParams()["id"]
 	id, err := strconv.Atoi(rawID)
 	if err != nil {
-		api.ServeBadRequest(writer, request, err.Error())
+		c.ServeBadRequest(err.Error())
 		return
 	}
 	p, err := postsService.FindPost(ctx, eposts.PostID(id))
 	if err != nil {
-		api.ServeBadRequest(writer, request, err.Error())
+		c.ServeBadRequest(err.Error())
 		return
 	}
-	api.ServeOK(writer, request, p)
+	c.ServeOK(p)
 }
 
 // UpdatePost updates a post.
-func (PostsController) UpdatePost(writer http.ResponseWriter, request *http.Request) {
+func (c *PostsController) UpdatePost() {
 	ctx := context.Background()
-	rawID := mux.Vars(request)["id"]
+	rawID := c.ParseURLParams()["id"]
 	id, err := strconv.Atoi(rawID)
 	if err != nil {
-		api.ServeBadRequest(writer, request, err.Error())
+		c.ServeBadRequest(err.Error())
 		return
 	}
 	var p eposts.Post
-	err = api.ParseJSONBody(&p, request.Body)
+	err = c.ParseJSONBody(&p)
 	if err != nil {
-		api.ServeBadRequest(writer, request, err.Error())
+		c.ServeBadRequest(err.Error())
 		return
 	}
 	p.ID = eposts.PostID(id)
 	err = postsService.UpdatePost(ctx, &p)
 	if err != nil {
-		api.ServeBadRequest(writer, request, err.Error())
+		c.ServeBadRequest(err.Error())
 		return
 	}
-	api.ServeCreated(writer, request, p)
+	c.ServeCreated(p)
 }
 
 // CreatePost creates a post.
-func (PostsController) CreatePost(writer http.ResponseWriter, request *http.Request) {
+func (c *PostsController) CreatePost() {
 	ctx := context.Background()
 	var p eposts.Post
-	err := api.ParseJSONBody(&p, request.Body)
+	err := c.ParseJSONBody(&p)
 	if err != nil {
-		api.ServeBadRequest(writer, request, err.Error())
+		c.ServeBadRequest(err.Error())
 		return
 	}
 	err = postsService.CreatePost(ctx, &p)
 	if err != nil {
-		api.ServeBadRequest(writer, request, err.Error())
+		c.ServeBadRequest(err.Error())
 		return
 	}
-	api.ServeCreated(writer, request, p)
+	c.ServeCreated(p)
 }
 
 // DeletePost deletes a post.
-func (PostsController) DeletePost(writer http.ResponseWriter, request *http.Request) {
+func (c *PostsController) DeletePost() {
 	ctx := context.Background()
-	rawID := mux.Vars(request)["id"]
+	rawID := c.ParseURLParams()["id"]
 	id, err := strconv.Atoi(rawID)
 	if err != nil {
-		api.ServeBadRequest(writer, request, err.Error())
+		c.ServeBadRequest(err.Error())
 		return
 	}
 	err = postsService.DeletePost(ctx, eposts.PostID(id))
 	if err != nil {
-		api.ServeBadRequest(writer, request, err.Error())
+		c.ServeBadRequest(err.Error())
 		return
 	}
-	api.ServeMessageOK(writer, request, "post deleted")
+	c.ServeMessageOK("post deleted")
 }

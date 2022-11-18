@@ -1,6 +1,8 @@
 package controllers
 
 import (
+    "net/http"
+
 	"github.com/Oleg-Smal-git/boosters-trial/app/services/api"
 )
 
@@ -15,7 +17,8 @@ func MustInitialize() { {{ range $_, $instance := .Controllers }}{{"\n\t"}}{{ $i
 var (
 	// Controllers is a map of routes and functions that control them.
 	Controllers = map[string]map[string]api.Serve { {{ range $route, $methods := .Handlers }}
-		"{{ $route }}": { {{ range $method, $handler := $methods }}{{"\n\t\t\t"}}"{{ $method }}": {{ $handler }},{{ end }}
+		"{{ $route }}": { {{ range $method, $handler := $methods }}{{"\n\t\t\t"}}"{{ $method }}": func(writer http.ResponseWriter, request *http.Request) {
+		    {{"\t"}}{{ index $handler 0}}.NewRequest(writer, request){{"\n\t\t\t\t"}}{{ index $handler 0}}.{{ index $handler 1}}(){{"\n\t\t\t"}}},{{ end }}
 		},{{ end }}
 	}
 )

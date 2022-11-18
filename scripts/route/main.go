@@ -21,7 +21,7 @@ var (
 
 // interpolationData wraps stuff we put in the template.
 type interpolationData struct {
-	Handlers    map[string]map[string]string
+	Handlers    map[string]map[string][]string
 	Controllers map[string]string
 }
 
@@ -36,7 +36,7 @@ func main() {
 	defer in.Close()
 	scanner := bufio.NewScanner(in)
 	data := interpolationData{
-		Handlers:    make(map[string]map[string]string),
+		Handlers:    make(map[string]map[string][]string),
 		Controllers: make(map[string]string),
 	}
 	for scanner.Scan() {
@@ -49,12 +49,12 @@ func main() {
 			panic(row[0] + "method is not valid")
 		}
 		if _, ok := data.Handlers[row[1]]; !ok {
-			data.Handlers[row[1]] = make(map[string]string)
+			data.Handlers[row[1]] = make(map[string][]string)
 		}
 		upC := strings.Split(row[2], ".")[0]
 		lowC := strings.ToLower(upC[:1]) + upC[1:]
 		data.Controllers[upC] = lowC
-		data.Handlers[row[1]][row[0]] = lowC + "." + strings.Split(row[2], ".")[1]
+		data.Handlers[row[1]][row[0]] = []string{lowC, strings.Split(row[2], ".")[1]}
 	}
 	rawTemplate, err := os.ReadFile(config.BasePath() + "/scripts/route/_template.go.tmp")
 	if err != nil {
