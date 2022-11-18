@@ -31,6 +31,7 @@ func main() {
 	logrus.Infof("starting the app at %v:%v", host, port)
 
 	// Instantiate the api server.
+	controllers.MustInitialize()
 	server := api.NewServer(host, port, controllers.Controllers)
 	err := server.Run()
 	if err != nil {

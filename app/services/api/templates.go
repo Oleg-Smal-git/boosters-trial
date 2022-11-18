@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/sirupsen/logrus"
@@ -12,6 +13,13 @@ import (
 func ServeOK(writer http.ResponseWriter, request *http.Request, object interface{}) {
 	writer.WriteHeader(http.StatusOK)
 	RenderJSON(writer, request, object)
+}
+
+// ServeMessageOK serves a 200 response with string message.
+func ServeMessageOK(writer http.ResponseWriter, request *http.Request, message string) {
+	response := make(map[string]string)
+	response["message"] = message
+	ServeOK(writer, request, message)
 }
 
 // ServeEmptyOK serves an empty 200 response.
@@ -49,6 +57,13 @@ func ServeConflict(writer http.ResponseWriter, request *http.Request, message st
 	RenderJSON(writer, request, response)
 }
 
+func ServeInternalError(writer http.ResponseWriter, request *http.Request, message string) {
+	writer.WriteHeader(http.StatusInternalServerError)
+	response := make(map[string]string)
+	response["message"] = message
+	RenderJSON(writer, request, response)
+}
+
 // RenderJSON writes a json to response.
 func RenderJSON(writer http.ResponseWriter, request *http.Request, response interface{}) {
 	writer.Header().Set("Content-Type", "application/json")
@@ -60,4 +75,10 @@ func RenderJSON(writer http.ResponseWriter, request *http.Request, response inte
 	if err != nil {
 		logrus.WithError(err).Fatalf("failed to write response")
 	}
+}
+
+// ParseJSONBody parses request body.
+// This function really shouldn't be here...
+func ParseJSONBody(target any, body io.ReadCloser) error {
+	return json.NewDecoder(body).Decode(&target)
 }
