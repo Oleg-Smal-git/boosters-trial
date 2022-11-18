@@ -20,6 +20,7 @@ type version struct {
 
 func main() {
 	cfg := config.MustConfig()
+	logrus.Infof("starting the app with %v env", cfg["envname"])
 	defaultDsn := cfg["database.writer"]
 
 	// Parse override flags.

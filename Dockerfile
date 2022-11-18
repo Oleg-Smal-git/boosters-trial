@@ -4,6 +4,7 @@ FROM golang:1.18-alpine
 
 WORKDIR /boosters-trial
 ENV PROJECT_PATH='/boosters-trial'
+ENV ENV='docker'
 
 COPY go.mod ./
 COPY go.sum ./
