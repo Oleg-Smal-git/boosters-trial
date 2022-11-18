@@ -3,18 +3,20 @@ package api
 import (
 	"fmt"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 // Server wraps http.Server.
 type Server struct {
 	host        string
 	port        int
-	multiplexer *http.ServeMux
+	multiplexer http.Handler
 }
 
 // NewServer instantiates a new Server.
 func NewServer(host string, port int, controllers map[string]map[string]Serve) *Server {
-	multiplexer := http.NewServeMux()
+	multiplexer := mux.NewRouter()
 	for route, methodGroup := range controllers {
 		serve := generalizeHandler(methodGroup)
 		multiplexer.Handle(route, handler{serve: serve})
