@@ -45,6 +45,7 @@ func (PostsController) IndexPosts(writer http.ResponseWriter, request *http.Requ
 	ps, err := postsService.IndexPosts(ctx)
 	if err != nil {
 		api.ServeBadRequest(writer, request, err.Error())
+		return
 	}
 	api.ServeOK(writer, request, ps)
 }
@@ -56,10 +57,12 @@ func (PostsController) FindPost(writer http.ResponseWriter, request *http.Reques
 	id, err := strconv.Atoi(rawID)
 	if err != nil {
 		api.ServeBadRequest(writer, request, err.Error())
+		return
 	}
 	p, err := postsService.FindPost(ctx, eposts.PostID(id))
 	if err != nil {
 		api.ServeBadRequest(writer, request, err.Error())
+		return
 	}
 	api.ServeOK(writer, request, p)
 }
@@ -71,16 +74,19 @@ func (PostsController) UpdatePost(writer http.ResponseWriter, request *http.Requ
 	id, err := strconv.Atoi(rawID)
 	if err != nil {
 		api.ServeBadRequest(writer, request, err.Error())
+		return
 	}
 	var p eposts.Post
 	err = api.ParseJSONBody(&p, request.Body)
 	if err != nil {
 		api.ServeBadRequest(writer, request, err.Error())
+		return
 	}
 	p.ID = eposts.PostID(id)
 	err = postsService.UpdatePost(ctx, &p)
 	if err != nil {
 		api.ServeBadRequest(writer, request, err.Error())
+		return
 	}
 	api.ServeCreated(writer, request, p)
 }
@@ -92,10 +98,12 @@ func (PostsController) CreatePost(writer http.ResponseWriter, request *http.Requ
 	err := api.ParseJSONBody(&p, request.Body)
 	if err != nil {
 		api.ServeBadRequest(writer, request, err.Error())
+		return
 	}
 	err = postsService.CreatePost(ctx, &p)
 	if err != nil {
 		api.ServeBadRequest(writer, request, err.Error())
+		return
 	}
 	api.ServeCreated(writer, request, p)
 }
@@ -107,10 +115,12 @@ func (PostsController) DeletePost(writer http.ResponseWriter, request *http.Requ
 	id, err := strconv.Atoi(rawID)
 	if err != nil {
 		api.ServeBadRequest(writer, request, err.Error())
+		return
 	}
 	err = postsService.DeletePost(ctx, eposts.PostID(id))
 	if err != nil {
 		api.ServeBadRequest(writer, request, err.Error())
+		return
 	}
 	api.ServeMessageOK(writer, request, "post deleted")
 }

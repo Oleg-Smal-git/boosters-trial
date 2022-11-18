@@ -13,6 +13,6 @@ type handler struct {
 
 // ServeHTTP wraps Serve.
 func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	logrus.Infof("%v\t%v\t%v", r.Method, r.URL, r.Body)
+	logrus.Infof("%v\t%v", r.Method, r.URL)
 	h.serve(w, r)
 }
