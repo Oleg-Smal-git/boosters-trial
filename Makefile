@@ -24,10 +24,10 @@ run:
 	@make build_api
 	@./bin/run-api --host=$(OVERRIDE_HOST) --port=$(OVERRIDE_PORT)
 
-unit_test:
+unit_tests:
 	go test $$(go list ./... | grep -v integration_tests)
 
-integration_test:
+integration_tests:
 	@make build_integration_tests
 	@make run OVERRIDE_HOST="127.0.0.1" OVERRIDE_PORT=9999 &
 	@./bin/integration_tests --targetHost="127.0.0.1" --targetPort=9999
