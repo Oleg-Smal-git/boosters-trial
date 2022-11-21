@@ -11,13 +11,12 @@ import (
 	posts "github.com/Oleg-Smal-git/boosters-trial/app/services/posts/logic"
 )
 
-var (
-	postsService iposts.PostsService
-)
+var ()
 
 // PostsController is a wrapper for controllers that interact with posts.
 type PostsController struct {
 	api.ControllerSuite
+	service iposts.PostsService
 }
 
 // MustInitialize performs all the setup needed for the controller.
@@ -35,13 +34,13 @@ func (c *PostsController) MustInitialize() {
 	if err != nil {
 		panic(err)
 	}
-	postsService = service
+	c.service = service
 }
 
 // IndexPosts fetches all posts.
 func (c *PostsController) IndexPosts() {
 	ctx := context.Background()
-	ps, err := postsService.IndexPosts(ctx)
+	ps, err := c.service.IndexPosts(ctx)
 	if err != nil {
 		c.ServeBadRequest(err.Error())
 		return
@@ -58,7 +57,7 @@ func (c *PostsController) FindPost() {
 		c.ServeBadRequest(err.Error())
 		return
 	}
-	p, err := postsService.FindPost(ctx, eposts.PostID(id))
+	p, err := c.service.FindPost(ctx, eposts.PostID(id))
 	if err != nil {
 		c.ServeBadRequest(err.Error())
 		return
@@ -82,7 +81,7 @@ func (c *PostsController) UpdatePost() {
 		return
 	}
 	p.ID = eposts.PostID(id)
-	err = postsService.UpdatePost(ctx, &p)
+	err = c.service.UpdatePost(ctx, &p)
 	if err != nil {
 		c.ServeBadRequest(err.Error())
 		return
@@ -99,7 +98,7 @@ func (c *PostsController) CreatePost() {
 		c.ServeBadRequest(err.Error())
 		return
 	}
-	err = postsService.CreatePost(ctx, &p)
+	err = c.service.CreatePost(ctx, &p)
 	if err != nil {
 		c.ServeBadRequest(err.Error())
 		return
@@ -116,7 +115,7 @@ func (c *PostsController) DeletePost() {
 		c.ServeBadRequest(err.Error())
 		return
 	}
-	err = postsService.DeletePost(ctx, eposts.PostID(id))
+	err = c.service.DeletePost(ctx, eposts.PostID(id))
 	if err != nil {
 		c.ServeBadRequest(err.Error())
 		return
