@@ -12,20 +12,20 @@ and can't be overridden by cmd flags.
 
 ## Database
 The database uses PostgreSQL v14.1 driver. Schema structure is managed using migrations, which you can create with 
-`make new_migration --name="migration name here"` (instantiating `.up.sql` and `down.slq` files in `./db/migrations/`), and apply using `make migrate`. The latter will compare all migration 
-ids found in `./db/migrations/` folder with `versions` table in the target database and run the missing ones, 
-registering them in the aforementioned table.
+`make new_migration --name="migration name here"` (instantiating `.up.sql` and `down.slq` files in `./db/migrations/`), 
+and apply using `make migrate`. The latter will compare all migration ids found in `./db/migrations/` folder with 
+`versions` table in the target database and run the missing ones, registering them in the aforementioned table.
 
 There are two users created in the initial migration of the database (`./db/migrations/_init.sql`) -- a readonly one, 
-and one with full privileges. This is done to allow for later separation of the database into a readonly and a common 
-replicas without touching the code.
+and one with full privileges. This is done to allow for later separation of the database into a readonly replica and a 
+common one, without touching the code.
 
 ## Testing
 The project implements both unit and integration tests.
 * To run unit tests, execute `make unit_test`. This will traverse all the directories and subdirectories of the project,
-    and run all the test files found in it (except for thos located under `./test/` folder).
+    and run all the test files found in it (except for those located under `./test/` folder).
 * To run integration tests, execute `make integration_test`. This will re-build the app and start a new instance of the
-    api on port `9999` running in the background, and then run the `main` function in `test` package. 
+    api on port specified in `Makefile` running in the background, and then run the unit tests located in `test` package. 
     The underlying API instance is killed when tests are done running.
 
 ## Config
