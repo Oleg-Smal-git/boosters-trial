@@ -52,4 +52,3 @@ docker_up:
 	@docker-compose up migrations
 	@docker-compose up api
 	@make docker_down
-
